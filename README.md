@@ -1,40 +1,47 @@
-# Hostel Allocation System
+# 🏢 AI-Powered Hostel Allocation System (HostelConnect)
 
-A fully functional, modern hostel allocation system built with **Python (Flask)** and **SQLite**. Designed for streamlined student management, real-time allocation, and organized complaint tracking.
+A premium, fully-functional **Hostel Management & AI Allocation System** built with **Python (Flask)** and **SQLite**. Designed to automate student housing with intelligent matching, real-time warden management, and a seamless student portal.
 
-## Features
+---
 
-- **Student Self-Registration**: Secure signup with personal and academic details.
-- **Preference Matching**: Students specify their building, AC, and room type preferences.
-- **Admin Dashboard**: Real-time overview of unallocated students, active allocations, and hostel capacity.
-- **Smart Allocation**: Admins see room availability filtered by gender and preferences for optimal assignment.
-- **Waiting List**: Automatic rank assignment when no suitable rooms are available.
-- **Complaint Management**: Two-way communication for reporting and resolving room/hostel issues.
-- **In-App Notifications**: Alerts for allocation changes, waitlist status, and complaint updates.
-- **Premium UI**: Responsive design with a clean sidebar for admins and a modern dashboard for students.
+## 🤖 **AI-Driven Features**
+This project features an **Intelligent Allocation Engine** that replaces manual placement. The AI considers multiple factors to find the perfect room:
+- **Gender Segregation**: Strictly assigned to boys-only or girls-only hostels.
+- **Preference Matching**: Weights for AC/Non-AC, Floor, and Room Type (Single/Double/Triple).
+- **Smart Grouping**: Prioritizes grouping students from the **same branch/stream** and **similar eating preferences** (Veg/Non-Veg) to foster better community living.
+- **Capacity Management**: Real-time bed tracking with an automated waiting list for overflow.
 
-## Technology Stack
+---
 
-- **Backend**: Flask, Flask-SQLAlchemy, Flask-Login, Flask-WTF
-- **Database**: SQLite (easy switch to PostgreSQL via environment variables)
-- **Frontend**: Bootstrap 5.3, custom CSS for a premium look, Inter font, Vanilla JS
-- **Auth**: Secure password hashing with Werkzeug
+## 🛡️ **Warden Side Features**
+A dedicated management suite for staff (`/auth/warden-login`):
+- **AI Auto-Allocation**: Single-click button to intelligently assign all unallocated students.
+- **Hostel & Room CRUD**: Full power to add, edit, or delete buildings, floors, and rooms.
+- **Active Assignment List**: Track every student's location and vacate rooms with one click.
+- **Complaint Resolution**: View student issues, update statuses (In Progress/Resolved), and notify students automatically.
+- **Data Export**: One-click **CSV Download** of all allocated student data for administrative reports.
 
-## Installation
+---
+
+## 🎓 **Student Side Features**
+A modern dashboard for residents:
+- **Smart Registration**: Capture academic, personal, and preference data.
+- **Preference Portal**: Select building, room type, and lifestyle preferences.
+- **Real-Time Notifications**: Get notified instantly when you are allocated a room or when your complaint state changes.
+- **Profile & Complaints**: Raise and track maintenance issues directly from the portal.
+
+---
+
+## 🛠️ **Installation & Setup**
 
 ### 1. Prerequisites
-- Python 3.8 or higher installed on your system.
+- Python 3.8+ installed.
 
 ### 2. Setup Virtual Environment
 ```bash
-# Create venv
 python -m venv venv
-
-# Activate venv (Linux/macOS)
-source venv/bin/activate
-
-# For Windows
-# venv\Scripts\activate
+source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate   # Windows
 ```
 
 ### 3. Install Dependencies
@@ -42,28 +49,31 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Initialize the Database & Seed Data
+### 4. Initialize Admin Credentials
 ```bash
-# Create an admin user manually
-python create_admin.py --email admin@hostel.com --password admin123 --name "Super Admin"
-
-# (Optional) Seed the database with some sample hostels, rooms, and students
-python seed_data.py
+python create_admin.py --email admin@hostel.com --password admin123 --name "Chief Warden"
 ```
 
 ### 5. Run the Application
 ```bash
-python app.py
+gunicorn "app:create_app()" 
+# or for development: python app.py
 ```
-The application will be available at `http://127.0.0.1:5000`.
 
-## Default Credentials
-- **Admin**: `admin@hostel.com` / `admin123`
-- **Sample Students** (if seeded): `ryan@student.com` or `emma@student.com` / `student123`
+---
 
-## Deployment
-This application is ready to be hosted on platforms like PythonAnywhere, Heroku, or a VPS.
-For production use:
-1. Set a unique `SECRET_KEY` in environment variables.
-2. Provide a `DATABASE_URL` for PostgreSQL if scaling is required.
-3. Use a WSGI server like `gunicorn` or `waitress`.
+## 🌍 **Deployment Ready**
+This repository is configured for immediate deployment to **Render.com** or **Vercel**:
+- Includes `Procfile` for Gunicorn pairing.
+- Environment variable support for `SECRET_KEY` and `FLASK_CONFIG`.
+- Standard `requirements.txt` for fast build cycles.
+
+---
+
+## 🔑 **Default Warden Access**
+- **Portal**: [https://your-app-url.onrender.com/auth/warden-login](https://your-app-url.onrender.com/auth/warden-login)
+- **ID**: `admin@hostel.com`
+- **Pass**: `admin123`
+
+---
+*Created with ❤️ for efficient campus housing management.*
