@@ -4,4 +4,4 @@ Flask-Login
 Flask-WTF
 Werkzeug
 python-dotenv
-email-validator
+email-validatorgunicorn
