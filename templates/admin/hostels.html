@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Hostels - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Hostels Management</h1>
+            <p>Add, edit, or remove hostel buildings from the system.</p>
+        </div>
+        <a href="{{ url_for('warden.add_hostel') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Add New Hostel
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 animate-in">
+    {% for h in hostels %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h3 class="mb-0 text-primary">{{ h.name }}</h3>
+                    <span class="badge bg-{{ 'primary' if h.gender_type == 'boys' else 'danger' }} p-2">
+                        {{ 'BOYS' if h.gender_type == 'boys' else 'GIRLS' }}
+                    </span>
+                </div>
+                
+                <p class="text-muted small mb-4">
+                    <i class="bi bi-geo-alt me-1"></i> {{ h.address if h.address else 'No address provided.' }}
+                </p>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="small text-muted mb-1">Total Capacity</div>
+                        <div class="h5 mb-0">{{ h.total_capacity }} <small class="text-muted fs-6">Beds</small></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="small text-muted mb-1">Warden</div>
+                        <div class="h6 mb-0">{{ h.warden_name if h.warden_name else 'Not assigned' }}</div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('warden.rooms', hostel_id=h.id) }}" class="btn btn-light btn-sm flex-grow-1">View Rooms</a>
+                    <a href="{{ url_for('warden.edit_hostel', hid=h.id) }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i></a>
+                    <form action="{{ url_for('warden.delete_hostel', hid=h.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" data-confirm="Are you sure? All rooms in this hostel will also be deleted.">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="empty-state">
+            <i class="bi bi-buildings"></i>
+            <p>No hostels registered yet.</p>
+            <a href="{{ url_for('warden.add_hostel') }}" class="btn btn-primary mt-2">Add Your First Hostel</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

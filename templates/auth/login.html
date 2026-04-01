@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Student Entrance - HostelConnect{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate-in">
+        <div class="text-center mb-4">
+            <div class="stat-icon bg-sky-light mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                <i class="bi bi-mortarboard"></i>
+            </div>
+            <h2>Student Portal</h2>
+            <p class="auth-subtitle">Sign in to manage your hostel rooms</p>
+        </div>
+        
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="name@example.com") }}
+                {% for error in form.email.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
+                {% for error in form.password.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.remember(class="form-check-input") }}
+                <label class="form-check-label" for="remember">Remember Me</label>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+                {{ form.submit(class="btn btn-primary btn-lg", value="Log In as Student") }}
+            </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <p class="mb-2 text-muted">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+            <div class="border-top pt-3 mt-3">
+                <a href="{{ url_for('auth.warden_login') }}" class="small text-primary fw-bold">
+                    <i class="bi bi-shield-lock me-1"></i> Warden Portal Entrance
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

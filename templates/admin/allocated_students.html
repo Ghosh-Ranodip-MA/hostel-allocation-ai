@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Allocated Students - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Allocated Students</h1>
+            <p>View active hostel assignments and manage room vacations.</p>
+        </div>
+        <a href="{{ url_for('warden.download_allocated_csv') }}" class="btn btn-outline-success">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export to CSV
+        </a>
+    </div>
+</div>
+
+<div class="card animate-in">
+    <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Active Allocations</h5>
+        <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-start-0" data-table-filter="allocatedTable" placeholder="Search allocated students...">
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="allocatedTable">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Room & Hostel</th>
+                        <th>Allocation Info</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for allocation, student, room, hostel in allocations %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ student.name }}</div>
+                            <div class="text-muted small">{{ student.roll_number }} &bull; {{ student.branch }}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold">Room {{ room.room_number }}</div>
+                            <div class="text-muted small">{{ hostel.name }}</div>
+                            <div class="d-flex gap-1 mt-1">
+                                <span class="badge bg-light text-dark border small">{{ 'AC' if room.ac else 'Non-AC' }}</span>
+                                <span class="badge bg-light text-dark border small">{{ room.room_type | capitalize }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small">Allocated: {{ allocation.allocated_at.strftime('%d %b %Y') }}</div>
+                            <span class="badge-status active">Active</span>
+                        </td>
+                        <td class="text-end">
+                            <form action="{{ url_for('warden.vacate', allocation_id=allocation.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Are you sure you want to vacate this student? This will instantly free up a bed in the room.">
+                                    Vacate Room
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-person-check"></i>
+                                <p>No active allocations found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

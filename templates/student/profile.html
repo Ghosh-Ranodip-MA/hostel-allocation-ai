@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - HostelConnect{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <h1>Your Profile</h1>
+    <p>Manage your account and contact information.</p>
+</div>
+
+<div class="row g-4 animate-in">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="bg-indigo-light stat-icon mx-auto mb-4" style="width: 100px; height: 100px; font-size: 3rem; border-radius: 50%;">
+                    <i class="bi bi-person"></i>
+                </div>
+                <h4 class="mb-1 text-primary">{{ current_user.name }}</h4>
+                <p class="text-muted mb-4">{{ current_user.roll_number }}</p>
+                <div class="d-grid">
+                    <span class="badge bg-light text-dark border p-2 mb-2">
+                        <i class="bi bi-envelope me-2"></i> {{ current_user.email }}
+                    </span>
+                    <span class="badge bg-light text-dark border p-2 mb-2">
+                        <i class="bi bi-mortarboard me-2"></i> {{ current_user.year }} Year
+                    </span>
+                    <span class="badge bg-light text-dark border p-2">
+                        <i class="bi bi-diagram-3 me-2"></i> {{ current_user.branch }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="mb-0">Update Contact Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label for="parent_phone" class="form-label">Parent's Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            {{ form.parent_phone(class="form-control" + (" is-invalid" if form.parent_phone.errors else "")) }}
+                        </div>
+                        {% for error in form.parent_phone.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Emergency contact number.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="address" class="form-label">Permanent Address</label>
+                        {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else ""), rows="5") }}
+                        {% for error in form.address.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="alert alert-info d-flex align-items-center mb-4">
+                        <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                        <div>
+                            Academic details like Roll No, Year, and Branch can only be updated by the administration.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid pt-3">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

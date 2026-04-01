@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Rooms - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Rooms Management</h1>
+            <p>Configure room details, capacity, and maintenance status.</p>
+        </div>
+        <a href="{{ url_for('warden.add_room') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Add New Room
+        </a>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card mb-4 animate-in">
+    <div class="card-body p-3">
+        <form action="{{ url_for('warden.rooms') }}" method="GET" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold mb-1">Filter by Hostel</label>
+                <select name="hostel_id" class="form-select form-select-sm">
+                    <option value="">All Hostels</option>
+                    {% for h in hostels %}
+                    <option value="{{ h.id }}" {{ 'selected' if hostel_filter == h.id }}>{{ h.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-primary btn-sm px-4">Filter</button>
+                <a href="{{ url_for('warden.rooms') }}" class="btn btn-light btn-sm">Clear</a>
+            </div>
+            <div class="col-md">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0" data-table-filter="roomsTable" placeholder="Search rooms...">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card animate-in">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="roomsTable">
+                <thead>
+                    <tr>
+                        <th>Room info</th>
+                        <th>Hostel</th>
+                        <th>Type & AC</th>
+                        <th>Availability</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">Room {{ room.room_number }}</div>
+                            <div class="text-muted small">Floor {{ room.floor }}</div>
+                        </td>
+                        <td>{{ room.hostel.name }}</td>
+                        <td>
+                            <div class="small d-flex gap-1">
+                                <span class="badge bg-light text-dark border">{{ room.room_type | capitalize }}</span>
+                                <span class="badge bg-light text-dark border">{{ 'AC' if room.ac else 'Non-AC' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ room.available_beds }} / {{ room.capacity }}</div>
+                            <div class="progress mt-1" style="height: 4px; width: 60px;">
+                                {% set perc = (room.available_beds / room.capacity * 100) if room.capacity > 0 else 0 %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ perc }}%"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-status {{ room.status }}">{{ room.status }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{{ url_for('warden.edit_room', rid=room.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <form action="{{ url_for('warden.delete_room', rid=room.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-1" data-confirm="Are you sure you want to delete this room?">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-door-closed"></i>
+                                <p>No rooms found.</p>
+                                <a href="{{ url_for('warden.add_room') }}" class="btn btn-primary btn-sm">Create First Room</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Complaints - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <h1>All Students Complaints</h1>
+    <p>Review and update status of student-raised issues.</p>
+</div>
+
+<!-- Filter Bar -->
+<div class="card mb-4 animate-in">
+    <div class="card-body p-3">
+        <form action="{{ url_for('warden.complaints') }}" method="GET" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold mb-1">Filter by Status</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="open" {{ 'selected' if status_filter == 'open' }}>Open</option>
+                    <option value="in_progress" {{ 'selected' if status_filter == 'in_progress' }}>In Progress</option>
+                    <option value="resolved" {{ 'selected' if status_filter == 'resolved' }}>Resolved</option>
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-primary btn-sm px-4">Filter</button>
+                <a href="{{ url_for('warden.complaints') }}" class="btn btn-light btn-sm">Clear</a>
+            </div>
+            <div class="col-md">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0" data-table-filter="wardenComplaintsTable" placeholder="Search by student name or roll no...">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card animate-in">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="wardenComplaintsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>Student</th>
+                        <th>Description</th>
+                        <th style="width: 150px;">Raised At</th>
+                        <th style="width: 160px;">Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint, student_name, student_roll in complaints %}
+                    <tr>
+                        <td>#{{ complaint.id }}</td>
+                        <td>
+                            <div class="fw-bold">{{ student_name }}</div>
+                            <div class="small text-muted">{{ student_roll }}</div>
+                            {% if complaint.room_id %}
+                                <div class="badge bg-light text-dark border small mt-1">Room ID #{{ complaint.room_id }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-wrap" style="max-width: 400px;">
+                                {{ complaint.description }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small">{{ complaint.raised_at.strftime('%d %b %Y') }}</div>
+                            <div class="text-muted small">{{ complaint.raised_at.strftime('%H:%M %p') }}</div>
+                        </td>
+                        <td>
+                            <form action="{{ url_for('warden.update_complaint', cid=complaint.id) }}" method="POST">
+                                <div class="d-flex gap-1">
+                                    <select name="status" class="form-select form-select-sm {{ 'border-danger' if complaint.status == 'open' else 'border-success' if complaint.status == 'resolved' else 'border-primary' }}">
+                                        <option value="open" {{ 'selected' if complaint.status == 'open' }}>Open</option>
+                                        <option value="in_progress" {{ 'selected' if complaint.status == 'in_progress' }}>In Progress</option>
+                                        <option value="resolved" {{ 'selected' if complaint.status == 'resolved' }}>Resolved</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-check2"></i></button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-chat-square-dots"></i>
+                                <p>No complaints found with matching filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

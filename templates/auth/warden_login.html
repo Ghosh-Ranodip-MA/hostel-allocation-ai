@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Warden Entrance - HostelConnect{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate-in" style="border-top: 4px solid var(--clr-primary);">
+        <div class="text-center mb-4">
+            <div class="stat-icon bg-indigo-light mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <h2>Warden Portal</h2>
+            <p class="auth-subtitle">Authorized personnel only</p>
+        </div>
+        
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Warden ID / Email</label>
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="warden@hostel.com") }}
+                {% for error in form.email.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">Security Password</label>
+                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
+                {% for error in form.password.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.remember(class="form-check-input") }}
+                <label class="form-check-label" for="remember">Keep me signed in</label>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+                {{ form.submit(class="btn btn-primary btn-lg", value="Log In as Warden") }}
+            </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <p class="mb-0 text-muted">Are you a student? <a href="{{ url_for('auth.login') }}">Student Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

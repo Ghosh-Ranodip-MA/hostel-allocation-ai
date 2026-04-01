@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Waiting List - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <h1>Hostel Waiting List</h1>
+    <p>Students awaiting room availability, ordered by rank.</p>
+</div>
+
+<div class="card animate-in">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Rank</th>
+                        <th>Student Details</th>
+                        <th>Preferences</th>
+                        <th>Joined List</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wl, student in entries %}
+                    <tr>
+                        <td>
+                            <div class="h4 mb-0 fw-bold text-primary">#{{ wl.rank }}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ student.name }}</div>
+                            <div class="text-muted small">{{ student.roll_number }} &bull; {{ student.branch }}</div>
+                            <span class="badge bg-light text-dark border p-1 small text-capitalize">{{ student.gender }}</span>
+                        </td>
+                        <td>
+                            <div class="small d-flex flex-wrap gap-1">
+                                <span class="badge bg-light text-dark border">{{ 'AC' if student.preferred_ac else 'Non-AC' }}</span>
+                                <span class="badge bg-light text-dark border">{{ student.preferred_room_type | capitalize }}</span>
+                                {% if student.preferred_floor %}
+                                    <span class="badge bg-light text-dark border">Floor {{ student.preferred_floor }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small">{{ wl.added_at.strftime('%d %b %Y') }}</div>
+                            <div class="text-muted small">{{ wl.added_at.strftime('%H:%M %p') }}</div>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('warden.allocate', student_id=student.id) }}" class="btn btn-sm btn-accent">
+                                Find Room
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-hourglass-bottom"></i>
+                                <p>The waiting list is currently empty.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

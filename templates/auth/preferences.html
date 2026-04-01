@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Set Preferences - HostelConnect{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate-in">
+        <h2>Hostel Preferences</h2>
+        <p class="auth-subtitle">Tell us what kind of room you're looking for</p>
+        
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                <label for="preferred_hostel_id" class="form-label">Preferred Hostel</label>
+                {{ form.preferred_hostel_id(class="form-select" + (" is-invalid" if form.preferred_hostel_id.errors else "")) }}
+                {% for error in form.preferred_hostel_id.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">We only show hostels that match your gender.</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="preferred_room_type" class="form-label">Room Type</label>
+                    {{ form.preferred_room_type(class="form-select" + (" is-invalid" if form.preferred_room_type.errors else "")) }}
+                    {% for error in form.preferred_room_type.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="preferred_ac" class="form-label">AC Preference</label>
+                    {{ form.preferred_ac(class="form-select" + (" is-invalid" if form.preferred_ac.errors else "")) }}
+                    {% for error in form.preferred_ac.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="eating_preference" class="form-label">Eating Preference</label>
+                    {{ form.eating_preference(class="form-select" + (" is-invalid" if form.eating_preference.errors else "")) }}
+                    {% for error in form.eating_preference.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="preferred_floor" class="form-label">Preferred Floor (Optional)</label>
+                    {{ form.preferred_floor(class="form-control" + (" is-invalid" if form.preferred_floor.errors else ""), placeholder="e.g. 2") }}
+                    {% for error in form.preferred_floor.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+                {{ form.submit(class="btn btn-primary btn-lg") }}
+            </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('student.dashboard') }}" class="text-muted">Skip for now</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

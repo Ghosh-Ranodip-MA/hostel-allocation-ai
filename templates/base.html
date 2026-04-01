@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hostel Allocation System – Manage student hostel rooms, complaints, and waiting lists.">
+  <title>{% block title %}Hostel Allocation System{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  {% if current_user.is_authenticated and current_user.role == 'admin' %}
+  {# ─────────── WARDEN LAYOUT WRAPPER ─────────── #}
+  <div class="warden-wrapper">
+    <!-- Sidebar -->
+    <nav id="warden-sidebar" class="warden-sidebar">
+      <div class="sidebar-brand">
+        <i class="bi bi-person-badge"></i>
+        <span>HostelWarden</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="{{ 'active' if request.endpoint == 'warden.dashboard' }}">
+          <a href="{{ url_for('warden.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint == 'warden.unallocated' }}">
+          <a href="{{ url_for('warden.unallocated') }}"><i class="bi bi-person-plus"></i> Unallocated</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint == 'warden.allocated_students' }}">
+          <a href="{{ url_for('warden.allocated_students') }}"><i class="bi bi-person-check"></i> Allocated</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint == 'warden.waiting_list' }}">
+          <a href="{{ url_for('warden.waiting_list') }}"><i class="bi bi-hourglass-split"></i> Waiting List</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint in ('warden.hostels', 'warden.add_hostel', 'warden.edit_hostel') }}">
+          <a href="{{ url_for('warden.hostels') }}"><i class="bi bi-houses"></i> Hostels</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint in ('warden.rooms', 'warden.add_room', 'warden.edit_room') }}">
+          <a href="{{ url_for('warden.rooms') }}"><i class="bi bi-door-open"></i> Rooms</a>
+        </li>
+        <li class="{{ 'active' if request.endpoint == 'warden.complaints' }}">
+          <a href="{{ url_for('warden.complaints') }}"><i class="bi bi-exclamation-triangle"></i> Complaints</a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm w-100">
+          <i class="bi bi-box-arrow-left"></i> Logout
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main content container -->
+    <div class="warden-content">
+      <!-- Top bar (mobile toggle + breadcrumb) -->
+      <header class="warden-topbar">
+        <button class="btn btn-link sidebar-toggle d-lg-none" onclick="document.getElementById('warden-sidebar').classList.toggle('show')">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="topbar-user">
+          <span class="text-muted me-2">{{ current_user.name }}</span>
+          <i class="bi bi-person-circle fs-5"></i>
+        </div>
+      </header>
+
+      <!-- Flash messages (Admin) -->
+      <div class="px-4 pt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <main class="p-4">
+  {% else %}
+  {# ─────────── STUDENT / AUTH LAYOUT WRAPPER ─────────── #}
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top student-navbar">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <i class="bi bi-building me-2"></i>HostelConnect
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'student.dashboard' }}" href="{{ url_for('student.dashboard') }}">
+                <i class="bi bi-house-door"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'student.complaints' }}" href="{{ url_for('student.complaints') }}">
+                <i class="bi bi-chat-square-text"></i> Complaints
+              </a>
+            </li>
+            <li class="nav-item position-relative">
+              <a class="nav-link {{ 'active' if request.endpoint == 'student.notifications' }}" href="{{ url_for('student.notifications') }}">
+                <i class="bi bi-bell"></i> Notifications
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'student.profile' }}" href="{{ url_for('student.profile') }}">
+                <i class="bi bi-person"></i> Profile
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'auth.preferences' }}" href="{{ url_for('auth.preferences') }}">
+                <i class="bi bi-sliders"></i> Preferences
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'auth.login' }}" href="{{ url_for('auth.login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.endpoint == 'auth.register' }}" href="{{ url_for('auth.register') }}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash messages (Student) -->
+  <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main class="container py-4">
+  {% endif %}
+
+        {# --- SHARED CONTENT BLOCK (declared only once to avoid Jinja2 conflict) --- #}
+        {% block content %}{% endblock %}
+
+  {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      </main> <!-- /p-4 -->
+    </div> <!-- /warden-content -->
+  </div> <!-- /warden-wrapper -->
+  {% else %}
+  </main> <!-- /container -->
+  
+  <!-- Footer -->
+  <footer class="site-footer text-center">
+    <div class="container">
+      <p class="mb-0">&copy; 2026 HostelConnect &mdash; All rights reserved.</p>
+    </div>
+  </footer>
+  {% endif %}
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

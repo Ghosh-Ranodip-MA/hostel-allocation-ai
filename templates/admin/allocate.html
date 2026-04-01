@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Allocate Student - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('warden.unallocated') }}">Unallocated</a></li>
+            <li class="breadcrumb-item active">Allocate Student</li>
+        </ol>
+    </nav>
+    <h1>Allocate: {{ student.name }}</h1>
+    <p>Student Roll No: {{ student.roll_number }} | Gender: <span class="text-capitalize">{{ student.gender }}</span></p>
+</div>
+
+<div class="row g-4 mb-4 animate-in">
+    <div class="col-lg-4">
+        <div class="card h-100 shadow-sm border-primary">
+            <div class="card-header bg-primary text-white border-0 py-3">
+                <h5 class="mb-0">Selected Preferences</h5>
+            </div>
+            <div class="card-body p-4">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3 d-flex justify-content-between border-bottom pb-2">
+                        <span class="text-muted">AC Preference:</span>
+                        <span class="fw-bold">{{ 'AC Room' if student.preferred_ac else 'Non-AC Room' }}</span>
+                    </li>
+                    <li class="mb-3 d-flex justify-content-between border-bottom pb-2">
+                        <span class="text-muted">Room Type:</span>
+                        <span class="fw-bold">{{ student.preferred_room_type | capitalize }}</span>
+                    </li>
+                    {% if student.preferred_hostel_id %}
+                    <li class="mb-3 d-flex justify-content-between border-bottom pb-2">
+                        <span class="text-muted">Preferred Hostel:</span>
+                        <span class="fw-bold">ID #{{ student.preferred_hostel_id }}</span>
+                    </li>
+                    {% endif %}
+                    {% if student.preferred_floor %}
+                    <li class="mb-0 d-flex justify-content-between">
+                        <span class="text-muted">Preferred Floor:</span>
+                        <span class="fw-bold">{{ student.preferred_floor }}</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <form method="POST" action="">
+            <div class="card h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Available Rooms</h5>
+                    <span class="badge bg-light text-dark border">{{ all_rooms | length }} Total Rooms for <span class="text-capitalize">{{ student.gender }}</span></span>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if preferred_rooms %}
+                    <h6 class="text-primary mb-3"><i class="bi bi-star-fill me-1"></i> Best Matches Based on Student Preferences</h6>
+                    <div class="row g-3 mb-4">
+                        {% for room in preferred_rooms %}
+                        <div class="col-md-6">
+                            <label class="room-option w-100">
+                                <input type="radio" name="room_id" value="{{ room.id }}" required>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="h5 mb-0">Room {{ room.room_number }}</div>
+                                    <span class="badge bg-primary">Best Match</span>
+                                </div>
+                                <div class="text-muted small mb-2">{{ room.hostel.name }} &bull; Floor {{ room.floor }}</div>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-light text-dark border small">{{ 'AC' if room.ac else 'Non-AC' }}</span>
+                                    <span class="badge bg-light text-dark border small">{{ room.room_type | capitalize }}</span>
+                                    <span class="badge bg-light text-dark border small">{{ room.available_beds }}/{{ room.capacity }} Left</span>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <h6 class="text-muted mb-3">Other Available Rooms (Matching Gender)</h6>
+                    <div class="row g-3">
+                        {% for room in all_rooms if room not in preferred_rooms %}
+                        <div class="col-md-6">
+                            <label class="room-option w-100">
+                                <input type="radio" name="room_id" value="{{ room.id }}" required>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="h5 mb-0">Room {{ room.room_number }}</div>
+                                </div>
+                                <div class="text-muted small mb-2">{{ room.hostel.name }} &bull; Floor {{ room.floor }}</div>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-light text-dark border small">{{ 'AC' if room.ac else 'Non-AC' }}</span>
+                                    <span class="badge bg-light text-dark border small">{{ room.room_type | capitalize }}</span>
+                                    <span class="badge bg-light text-dark border small">{{ room.available_beds }}/{{ room.capacity }} Left</span>
+                                </div>
+                            </label>
+                        </div>
+                        {% else %}
+                        {% if not preferred_rooms %}
+                        <div class="col-12 text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-door-closed"></i>
+                                <p>No available rooms found for this student's gender.</p>
+                                <a href="{{ url_for('warden.rooms') }}" class="btn btn-outline-primary btn-sm">Manage Rooms</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if all_rooms or preferred_rooms %}
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('warden.unallocated') }}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5">Confirm Allocation</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

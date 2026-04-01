@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('warden.hostels') }}">Hostels</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+    <h1>{{ title }}</h1>
+    <p>Define building details, gender assignment, and capacity.</p>
+</div>
+
+<div class="row justify-content-center animate-in">
+    <div class="col-xl-6 col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label for="name" class="form-label fw-bold">Hostel Building Name</label>
+                        {{ form.name(class="form-control form-control-lg" + (" is-invalid" if form.name.errors else ""), placeholder="e.g. Phoenix South Block") }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="gender_type" class="form-label fw-bold">Gender Assignment</label>
+                            {{ form.gender_type(class="form-select" + (" is-invalid" if form.gender_type.errors else "")) }}
+                            <div class="form-text">Strictly enforced for student allocation.</div>
+                            {% for error in form.gender_type.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="total_capacity" class="form-label fw-bold">Total Capacity (Beds)</label>
+                            {{ form.total_capacity(class="form-control" + (" is-invalid" if form.total_capacity.errors else ""), type="number") }}
+                            {% for error in form.total_capacity.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="warden_name" class="form-label fw-bold">Assigned Warden Name</label>
+                        {{ form.warden_name(class="form-control" + (" is-invalid" if form.warden_name.errors else ""), placeholder="Full Name") }}
+                        {% for error in form.warden_name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="form-label fw-bold">Building Address / Location</label>
+                        {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else ""), placeholder="e.g. Sector 5, North Campus") }}
+                        {% for error in form.address.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        {{ form.submit(class="btn btn-primary btn-lg shadow-sm") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

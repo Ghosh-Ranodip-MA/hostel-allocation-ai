@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - HostelConnect{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Notifications</h1>
+            <p>Stay updated with your allocation status and messages.</p>
+        </div>
+        {% if notifications %}
+        <a href="{{ url_for('student.mark_all_read') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-check2-all me-1"></i> Mark all as read
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card animate-in overflow-hidden shadow-sm">
+    <div class="card-body p-0">
+        {% for note in notifications %}
+        <div class="notif-item {{ 'unread' if not note.is_read else 'read' }}">
+            <div class="notif-dot"></div>
+            <div class="notif-msg">
+                <div class="mb-1">{{ note.message }}</div>
+                <div class="notif-time">{{ note.created_at.strftime('%d %b %Y, %H:%M %p') }}</div>
+            </div>
+            {% if not note.is_read %}
+            <a href="{{ url_for('student.mark_read', nid=note.id) }}" class="btn btn-sm text-primary py-0" title="Mark as read">
+                <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="empty-state">
+                <i class="bi bi-bell-slash"></i>
+                <p>No notifications yet.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

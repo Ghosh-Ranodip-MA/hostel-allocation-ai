@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Warden Dashboard - HostelWarden{% endblock %}
+
+{% block content %}
+<div class="page-header animate-in">
+    <h1>Wardenistrator Dashboard</h1>
+    <p>Overview of hostel metrics and student allocations.</p>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3 animate-in">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stat-icon bg-indigo-light">
+                    <i class="bi bi-people"></i>
+                </div>
+                <span class="badge bg-light text-dark border">Total</span>
+            </div>
+            <div class="stat-value">{{ total_students }}</div>
+            <div class="stat-label">Registered Students</div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 animate-in">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stat-icon bg-emerald-light">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <span class="text-success small fw-bold">{{ ((allocated / total_students * 100) if total_students > 0 else 0) | round(1) }}%</span>
+            </div>
+            <div class="stat-value">{{ allocated }}</div>
+            <div class="stat-label">Allocated Students</div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 animate-in">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stat-icon bg-amber-light">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <span class="badge bg-light text-dark border">Waiting</span>
+            </div>
+            <div class="stat-value">{{ waiting }}</div>
+            <div class="stat-label">Students in Waitlist</div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 animate-in">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stat-icon bg-rose-light">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <a href="{{ url_for('warden.complaints') }}" class="text-decoration-none">
+                    <span class="badge bg-rose-light text-danger">Action Needed</span>
+                </a>
+            </div>
+            <div class="stat-value">{{ open_complaints }}</div>
+            <div class="stat-label">Open Complaints</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Quick Actions -->
+    <div class="col-lg-4 animate-in">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="mb-0">Inventory Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <div class="stat-label mb-1">Hostel Capacity</div>
+                        <div class="h3 mb-0">{{ total_rooms }} <small class="text-muted fs-6">Rooms</small></div>
+                    </div>
+                    <div class="text-end">
+                        <div class="stat-label mb-1">Available Beds</div>
+                        <div class="h3 mb-0 text-primary">{{ available_rooms }}</div>
+                    </div>
+                </div>
+                
+                <div class="progress mb-4" style="height: 10px;">
+                    {% set usage = ((allocated / total_students * 100) if total_students > 0 else 0) %}
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ usage }}%"></div>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('warden.unallocated') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-person-plus me-2 text-primary"></i> Allocate New Students</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('warden.add_hostel') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-plus-circle me-2 text-primary"></i> Add New Hostel</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('warden.add_room') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-door-closed me-2 text-primary"></i> Add New Room</span>
+                        <i class="bi bi-chevron-right small text-muted"></i>
+                    </a>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <form action="{{ url_for('warden.auto_allocate') }}" method="POST" onsubmit="return confirm('Trigger AI Auto-Allocation? This will assign rooms to all unallocated students based on their preferences.');">
+                        <button type="submit" class="btn btn-accent w-100 py-2">
+                            <i class="bi bi-robot me-2"></i> AI Auto-Allocate
+                        </button>
+                    </form>
+                    <p class="small text-muted mt-2 text-center">Smart matching based on gender, branch, and preferences.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Tasks (Complaints/Waitlist) -->
+    <div class="col-lg-8 animate-in">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="mb-0">Waiting List Snapshot</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Rank</th>
+                                <th>Student</th>
+                                <th>Preferences</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for wl_entry in recent_waitlist %}
+                            {% set s = wl_entry.student %}
+                            <tr>
+                                <td><span class="badge bg-light text-dark border">#{{ wl_entry.rank }}</span></td>
+                                <td>
+                                    <div class="fw-bold">{{ s.name }}</div>
+                                    <div class="text-muted small">{{ s.branch }} - {{ s.year }} Year</div>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ 'AC' if s.preferred_ac else 'Non-AC' }} &bull; {{ s.preferred_room_type | capitalize }}
+                                    </small>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('warden.allocate', student_id=s.id) }}" class="btn btn-sm btn-accent">Allocate</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-check-circle fs-2 d-block mb-2 opacity-50"></i>
+                                    Waiting list is empty
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center pb-4">
+                <a href="{{ url_for('warden.waiting_list') }}" class="btn btn-link py-0">View Full Waiting List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
